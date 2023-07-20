@@ -1137,7 +1137,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <PreBuildEventIgnoreExitCode>False</PreBuildEventIgnoreExitCode>
         <PreLinkEvent/>
         <PreLinkEventIgnoreExitCode>False</PreLinkEventIgnoreExitCode>
-        <PostBuildEvent>cd $(OUTPUTDIR)&amp;&amp;del *.dcu&amp;&amp;del $(OUTPUTNAME)32.exe&amp;&amp;ren $(OUTPUTNAME).exe  $(OUTPUTNAME)32.exe</PostBuildEvent>
+        <PostBuildEvent>cd $(OUTPUTDIR)&amp;&amp;del *.dcu&amp;&amp;del $(OUTPUTNAME)32.exe&amp;&amp;ren $(OUTPUTNAME).exe  $(OUTPUTNAME)32.exe</PostBuildEvent>
         <PostBuildEventIgnoreExitCode>False</PostBuildEventIgnoreExitCode>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Config)'=='Release' And '$(Platform)'=='Win64'">
@@ -1145,7 +1145,7 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <PreBuildEventIgnoreExitCode>False</PreBuildEventIgnoreExitCode>
         <PreLinkEvent/>
         <PreLinkEventIgnoreExitCode>False</PreLinkEventIgnoreExitCode>
-        <PostBuildEvent>cd $(OUTPUTDIR)&amp;&amp;del *.dcu</PostBuildEvent>
+        <PostBuildEvent>cd $(OUTPUTDIR)&amp;&amp;del *.dcu</PostBuildEvent>
         <PostBuildEventIgnoreExitCode>False</PostBuildEventIgnoreExitCode>
     </PropertyGroup>
 </Project>

@@ -1,0 +1,6 @@
+[Path]
+APP=Deploy.exe
+UPX=upx.exe
+InnoSetupScript=Instalador.lnk
+[EXTENSIONS]
+TMP=upx,000,001,drc,exe.bak,ex~,rsm

@@ -7,22 +7,15 @@ interface
 
 uses
   Winapi.Windows, Winapi.ShellApi,
-  System.IniFiles, System.StrUtils, System.SysUtils, System.DateUtils;
+  System.IniFiles, System.StrUtils, System.SysUtils, System.DateUtils,
+  System.IOUtils;
 
 type
   Exception = System.SysUtils.Exception;
 
 type
-  TConsoleFontColor = (
-    ccDefault,
-    ccBlue,
-    ccCyan,
-    ccWhite,
-    ccGreen,
-    ccYellow,
-    ccMagenta,
-    ccRed
-    );
+  TConsoleFontColor = (ccDefault, ccBlue, ccCyan, ccWhite, ccGreen, ccYellow,
+    ccMagenta, ccRed);
 
 const
 {$J+}
@@ -41,8 +34,7 @@ const
     { Green } FOREGROUND_GREEN,
     { Yellow } FOREGROUND_RED or FOREGROUND_GREEN,
     { Magenta } FOREGROUND_RED or FOREGROUND_BLUE,
-    { Red } FOREGROUND_RED
-    );
+    { Red } FOREGROUND_RED);
 
 function ConsoleCodePage(wCodePageID: UINT = 65001): boolean;
 procedure ConsoleDebugString(lpOutputString: LPCWSTR);
@@ -83,12 +75,14 @@ function ExtractFileExt(const aFilename: string): string;
 function UpperCase(const aValue: string): string;
 
 function LineCount(aValue: string; aLineSize: integer): integer;
-function SplitError(aValue: string; aLineSize: integer; aMarker: string = ' • '): TArray<string>;
+function SplitError(aValue: string; aLineSize: integer; aMarker: string = ' • ')
+  : TArray<string>;
 
 const
   SECTION = 'DEPLOY';
 
-function ReadDeployConfig(aDeployConfigFileName: string; aPropertie: string; aValue: string; aSection: string = SECTION): string;
+function ReadDeployConfig(aDeployConfigFileName: string; aPropertie: string;
+  aValue: string; aSection: string = SECTION): string;
 
 implementation
 
@@ -96,7 +90,8 @@ var
   LConsoleInfo      : TConsoleScreenBufferInfo;
   LConsoleInfoLoaded: boolean;
 
-function ReadDeployConfig(aDeployConfigFileName: string; aPropertie: string; aValue: string; aSection: string = SECTION): string;
+function ReadDeployConfig(aDeployConfigFileName: string; aPropertie: string;
+  aValue: string; aSection: string = SECTION): string;
 var
   LConfigName: string;
 begin
@@ -145,7 +140,8 @@ end;
 
 function ConsoleCodePage(wCodePageID: UINT = 65001): boolean;
 begin
-  Result := Winapi.Windows.SetConsoleOutputCP(wCodePageID) and Winapi.Windows.SetConsoleCP(wCodePageID);
+  Result := Winapi.Windows.SetConsoleOutputCP(wCodePageID) and
+    Winapi.Windows.SetConsoleCP(wCodePageID);
 end;
 
 procedure ConsoleDebugString(lpOutputString: LPCWSTR);
@@ -241,9 +237,15 @@ begin
   finally
     for LExtension in LExtensions do
     begin
-      LFileName := PWideChar(ChangeFileExt(aFilename, IFThen(LExtension[1] = '.', '', '.') + LExtension));
+      LFileName := PWideChar(ChangeFileExt(aFilename,
+        IFThen(LExtension[1] = '.', '', '.') + LExtension));
       if FileExists(LFileName) then
-        AwaitCommand('rm -Rf', LFileName);
+        try
+          TFile.Delete(LFileName);
+        except
+          on E: Exception do
+        end;
+      // AwaitCommand('rm -Rf', LFileName);
     end;
   end;
 end;
@@ -284,9 +286,13 @@ end;
 
 procedure head(aColor: TConsoleFontColor);
 begin
-  echo(' ┌─────────────┬────────┬──────────────────────┬───────────────────────────────┐', aColor);
-  echo(' │ Deploy v0.0 │ 00bits │ Copyright© 1995-0000 │ Luis Nt, https://app.qbits.pl │'.Replace('0000', ServiceConsole.YEAR).Replace('00', APP_BITS).Replace('0.0', VER), aColor);
-  echo(' ├─────────────┴────────┴──────────────────────┴───────────────────────────────┤', aColor);
+  echo(' ┌─────────────┬────────┬──────────────────────┬───────────────────────────────┐',
+    aColor);
+  echo(' │ Deploy v0.0 │ 00bits │ Copyright© 1995-0000 │ Luis Nt, https://app.qbits.pl │'.
+    Replace('0000', ServiceConsole.YEAR).Replace('00', APP_BITS).Replace('0.0',
+    VER), aColor);
+  echo(' ├─────────────┴────────┴──────────────────────┴───────────────────────────────┤',
+    aColor);
 end;
 
 function LineCount(aValue: string; aLineSize: integer): integer;
@@ -296,7 +302,8 @@ begin
     Inc(Result);
 end;
 
-function SplitError(aValue: string; aLineSize: integer; aMarker: string = ' • '): TArray<string>;
+function SplitError(aValue: string; aLineSize: integer; aMarker: string = ' • ')
+  : TArray<string>;
 var
   LIndex     : integer;
   LLineCount : integer;
@@ -315,14 +322,16 @@ begin
 
   for LIndex := 0 to Pred(LLineCount) do
   begin
-    Result[LIndex] := LSep + Copy(aValue, LIndex * LLineSize, LLineSize).PadRight(LLineSize, ' ');
-    LSep           := LSep2;
+    Result[LIndex] := LSep + Copy(aValue, LIndex * LLineSize, LLineSize)
+      .PadRight(LLineSize, ' ');
+    LSep := LSep2;
   end;
 end;
 
 procedure line(aValue: string; aColor: TConsoleFontColor; aMarker: string = '');
 const
-  LINE_SPACE = 'L00000000000000000000000000000000000000000000000000000000000000000000000000';
+  LINE_SPACE =
+    'L00000000000000000000000000000000000000000000000000000000000000000000000000';
 var
   LValue: string;
 begin
@@ -332,27 +341,31 @@ end;
 
 procedure rowo(aColor: TConsoleFontColor);
 const
-  LINE_DATA = ' ┌─────────────────────────────────────────────────────────────────────────────┐';
+  LINE_DATA =
+    ' ┌─────────────────────────────────────────────────────────────────────────────┐';
 begin
   echo(LINE_DATA, aColor);
 end;
 
 procedure rows(aColor: TConsoleFontColor);
 const
-  LINE_DATA = ' ├─────────────────────────────────────────────────────────────────────────────┤';
+  LINE_DATA =
+    ' ├─────────────────────────────────────────────────────────────────────────────┤';
 begin
   echo(LINE_DATA, aColor);
 end;
 
 procedure rowc(aColor: TConsoleFontColor);
 begin
-  echo(' └─────────────────────────────────────────────────────────────────────────────┘', aColor);
+  echo(' └─────────────────────────────────────────────────────────────────────────────┘',
+    aColor);
 end;
 
 procedure rowe(aColor: TConsoleFontColor);
 begin
   rows(aColor);
-  echo(' │                                                       Press ENTER to close! │', aColor);
+  echo(' │                                                       Press ENTER to close! │',
+    aColor);
   rowc(aColor);
   ReadLn;
 end;
@@ -363,65 +376,68 @@ const
   ERROR_MAKING_PROCESS: string = 'Erro ao criar processo';
   ReadBuffer                   = 1024;
 var
-  SecurityAttr        : TSecurityAttributes;
-  ReadPipe, WritePipe : THandle;
-  StartupInfo         : TStartupInfo;
-  ProcessInfo         : TProcessInformation;
-  Buffer              : PAnsiChar;
-  BytesRead, BytesLeft: DWORD;
-  AppRunning          : BOOL;
+  LSecurityAttr         : TSecurityAttributes;
+  LReadPipe, LWritePipe : THandle;
+  LStartupInfo          : TStartupInfo;
+  LProcessInfo          : TProcessInformation;
+  LBuffer               : PAnsiChar;
+  LBytesRead, LBytesLeft: DWORD;
+  LAppRunning           : BOOL;
 begin
-  SecurityAttr.nLength              := SizeOf(TSecurityAttributes);
-  SecurityAttr.bInheritHandle       := true;
-  SecurityAttr.lpSecurityDescriptor := nil;
-  if not CreatePipe(ReadPipe, WritePipe, @SecurityAttr, 0) then
+  LSecurityAttr.nLength              := SizeOf(TSecurityAttributes);
+  LSecurityAttr.bInheritHandle       := true;
+  LSecurityAttr.lpSecurityDescriptor := nil;
+  if not CreatePipe(LReadPipe, LWritePipe, @LSecurityAttr, 0) then
     raise Exception.Create(ERROR_COMUNICATION);
 
   try
-    Buffer := AllocMem(ReadBuffer + 1);
-    FillChar(StartupInfo, SizeOf(TStartupInfo), 0);
-    StartupInfo.cb          := SizeOf(TStartupInfo);
-    StartupInfo.hStdInput   := ReadPipe;
-    StartupInfo.hStdOutput  := GetStdHandle(STD_OUTPUT_HANDLE);
-    StartupInfo.hStdError   := GetStdHandle(STD_ERROR_HANDLE);
-    StartupInfo.dwFlags     := STARTF_USESTDHANDLES or STARTF_USESHOWWINDOW;
-    StartupInfo.wShowWindow := SW_HIDE;
+    LBuffer := AllocMem(ReadBuffer + 1);
+    FillChar(LStartupInfo, SizeOf(TStartupInfo), 0);
+    LStartupInfo.cb          := SizeOf(TStartupInfo);
+    LStartupInfo.hStdInput   := LReadPipe;
+    LStartupInfo.hStdOutput  := GetStdHandle(STD_OUTPUT_HANDLE);
+    LStartupInfo.hStdError   := GetStdHandle(STD_ERROR_HANDLE);
+    LStartupInfo.dwFlags     := STARTF_USESTDHANDLES or STARTF_USESHOWWINDOW;
+    LStartupInfo.wShowWindow := SW_HIDE;
 
-    if not CreateProcess(nil, PChar(aCommand + ' ' + aParameters), nil, nil, true, 0, nil, nil, StartupInfo, ProcessInfo) then
-      raise Exception.Create(ERROR_MAKING_PROCESS);
+    if not CreateProcess(nil, PChar(aCommand + ' ' + aParameters), nil, nil,
+      true, 0, nil, nil, LStartupInfo, LProcessInfo) then
+      raise Exception.Create(ERROR_MAKING_PROCESS + #10 + aCommand + ' ' +
+        aParameters);
 
-    CloseHandle(ReadPipe);
-    // AppRunning := True;
+    CloseHandle(LReadPipe);
+    // LAppRunning := True;
 
     repeat
-      BytesLeft := 0;
-      PeekNamedPipe(WritePipe, nil, 0, nil, @BytesRead, @BytesLeft);
-      if BytesRead > 0 then
+      LBytesLeft := 0;
+      PeekNamedPipe(LWritePipe, nil, 0, nil, @LBytesRead, @LBytesLeft);
+      if LBytesRead > 0 then
       begin
-        ZeroMemory(Buffer, ReadBuffer + 1);
-        if not string(Buffer).IsEmpty then
-          echo(string(Buffer));
-        ReadFile(WritePipe, Buffer, BytesRead, BytesRead, nil);
+        ZeroMemory(LBuffer, ReadBuffer + 1);
+        if not string(LBuffer).IsEmpty then
+          echo(string(LBuffer));
+        ReadFile(LWritePipe, LBuffer, LBytesRead, LBytesRead, nil);
       end;
-      AppRunning := WaitForSingleObject(ProcessInfo.hProcess, 100) = WAIT_TIMEOUT;
-    until not AppRunning;
+      LAppRunning := WaitForSingleObject(LProcessInfo.hProcess, 100)
+        = WAIT_TIMEOUT;
+    until not LAppRunning;
 
-    ZeroMemory(Buffer, ReadBuffer + 1);
+    ZeroMemory(LBuffer, ReadBuffer + 1);
     repeat
-      BytesLeft := 0;
-      PeekNamedPipe(WritePipe, nil, 0, nil, @BytesRead, @BytesLeft);
-      if BytesRead > 0 then
+      LBytesLeft := 0;
+      PeekNamedPipe(LWritePipe, nil, 0, nil, @LBytesRead, @LBytesLeft);
+      if LBytesRead > 0 then
       begin
-        if not string(Buffer).IsEmpty then
-          echo(string(Buffer));
-        ReadFile(WritePipe, Buffer, BytesRead, BytesRead, nil);
+        if not string(LBuffer).IsEmpty then
+          echo(string(LBuffer));
+        ReadFile(LWritePipe, LBuffer, LBytesRead, LBytesRead, nil);
       end;
-    until BytesRead = 0;
+    until LBytesRead = 0;
   finally
-    FreeMem(Buffer);
-    CloseHandle(WritePipe);
-    CloseHandle(ProcessInfo.hProcess);
-    CloseHandle(ProcessInfo.hThread);
+    FreeMem(LBuffer);
+    CloseHandle(LWritePipe);
+    CloseHandle(LProcessInfo.hProcess);
+    CloseHandle(LProcessInfo.hThread);
   end;
 end;
 
@@ -450,5 +466,8 @@ begin
   ServiceConsole.YEAR := YearDateFromFile(ParamStr(0));
   LConsoleInfoLoaded  := false;
 end;
+
+finalization
+
 
 end.
