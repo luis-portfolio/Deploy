@@ -6,11 +6,21 @@
 
 ### For 32-bit and 64-bit Windows platforms
 
-> This repository contains a project for optimization’  resources and compress application for Windows platform
+> This repository contains a project for optimization’ resources and compress application for Windows platform
 
 ### Screenshots
 
-##### Mouse uses
+##### Mouse uses Right-click on the “New Deploy File” menu option. 
+
+> For it to be created requires the program Deploy.exe needs to be run with administrator privileges only once, to create this option on Windows.
+
+![image](https://github.com/luis-portfolio/Deploy/assets/10253238/18c19b41-d67d-4825-b889-81891c6ec584)
+
+![image](https://github.com/luis-portfolio/Deploy/assets/10253238/712f0d88-4a5a-4464-93fd-cf9759db728c)
+
+![image](https://github.com/luis-portfolio/Deploy/assets/10253238/ad2e0c52-415f-41dc-a246-36162a3b9c17)
+
+##### Mouse uses Drag and drop
 
 ![image](https://github.com/luis-portfolio/Deploy/assets/10253238/b473de4b-42df-4363-89ae-0c025d65e561)
 
